@@ -1,0 +1,55 @@
+using System;
+using System.Collections.Generic;
+using System.Text;
+
+namespace OrderProcessingSystem
+{
+    class Program
+    {
+        static void Main(string[] args)
+        {
+            Console.OutputEncoding = Encoding.UTF8;
+            DiscountCalculator calculator = new DiscountCalculator();
+            Console.WriteLine("========== TÍNH GIẢM GIÁ ==========");
+            Console.Write("Nhập tổng giá trị đơn hàng: ");
+            decimal totalAmount = decimal.Parse(Console.ReadLine());
+            decimal result1 = calculator.ApplyDiscount(totalAmount);
+            Console.WriteLine( $"\nGiá sau khi giảm mặc định 5%: {result1:N0} VNĐ");
+            Console.Write("\nNhập % muốn giảm: ");
+            double percentage = double.Parse(Console.ReadLine());
+            decimal result2 = calculator.ApplyDiscount( totalAmount, percentage );
+            Console.WriteLine( $"Giá sau khi giảm {percentage}%: {result2:N0} VNĐ"  );
+            Console.Write("\nNhập giá trị voucher: ");
+            decimal voucher = decimal.Parse(Console.ReadLine());
+            Console.Write("Nhập giá trị đơn hàng tối thiểu để dùng voucher: " );
+            decimal minimumOrder = decimal.Parse(Console.ReadLine());
+            decimal result3 = calculator.ApplyDiscount( totalAmount, voucher,  minimumOrder);
+            Console.WriteLine($"Giá sau khi áp dụng voucher: {result3:N0} VNĐ");
+            Console.WriteLine( "\n\n========== NHẬP THÔNG TIN VẬN CHUYỂN ==========");
+            Console.WriteLine( "\n--- GIAO HÀNG SIÊU TỐC ---");
+            Console.Write("Nhập mã đơn hàng: ");
+            string expressId = Console.ReadLine();
+            Console.Write("Nhập khoảng cách (km): ");
+            double expressDistance = double.Parse(Console.ReadLine());
+            ExpressDelivery express = new ExpressDelivery( expressId, expressDistance);
+            Console.WriteLine( "\n--- GIAO HÀNG TIẾT KIỆM ---");
+            Console.Write("Nhập mã đơn hàng: ");
+            string ecoId = Console.ReadLine();
+            Console.Write("Nhập khoảng cách (km): ");
+            double ecoDistance = double.Parse(Console.ReadLine());
+            EcoDelivery eco = new EcoDelivery( ecoId, ecoDistance);
+            List<DeliveryService> deliveryList = new List<DeliveryService>();
+            deliveryList.Add(express);
+            deliveryList.Add(eco);
+            Console.WriteLine("\n\n========== DANH SÁCH PHÍ VẬN CHUYỂN ==========");
+            foreach (DeliveryService delivery in deliveryList)
+            {
+                Console.WriteLine($"Mã đơn hàng: {delivery.OrderId}");
+                Console.WriteLine($"Khoảng cách: {delivery.DistanceKm} km");
+                Console.WriteLine($"Loại giao: {delivery.GetType().Name}");
+                Console.WriteLine( $"Phí ship: {delivery.CalculateShippingFee():N0} VNĐ");
+            }
+            Console.WriteLine( "\nNhấn phím bất kỳ để thoát...");
+        }
+    }
+}

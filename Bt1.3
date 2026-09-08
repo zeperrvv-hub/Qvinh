@@ -1,0 +1,83 @@
+using System;
+using System.Collections.Generic;
+using System.Text;
+
+namespace OrderProcessingSystem
+{
+    public class DiscountCalculator
+    {
+        public decimal ApplyDiscount(decimal totalAmount)
+        {
+            return totalAmount * 0.95m;
+        }
+        public decimal ApplyDiscount(decimal totalAmount, double percentage)
+        {
+            if (percentage < 0 || percentage > 100)
+            {
+                throw new ArgumentException(
+                    "Phần trăm giảm giá phải từ 0 đến 100!"
+                );
+            }
+            decimal percent = (decimal)percentage;
+
+            return totalAmount * (1 - percent / 100);
+        }
+        public decimal ApplyDiscount(
+            decimal totalAmount,
+            decimal fixedVoucher,
+            decimal minimumOrder)
+        {
+            if (totalAmount >= minimumOrder)
+            {
+                decimal result = totalAmount - fixedVoucher;
+                return result < 0 ? 0 : result;
+            }
+            return totalAmount;
+        }
+    }
+
+    public class DeliveryService
+    {
+        public string OrderId { get; set; }
+        public double DistanceKm { get; set; }
+
+        public DeliveryService(string orderId, double distanceKm)
+        {
+            OrderId = orderId;
+            DistanceKm = distanceKm;
+        }
+
+        public virtual decimal CalculateShippingFee()
+        {
+            return (decimal)DistanceKm * 5000m;
+        }
+    }
+    public class ExpressDelivery : DeliveryService
+    {
+        public ExpressDelivery(string orderId, double distanceKm) : base(orderId, distanceKm)
+        {
+        }
+        public override decimal CalculateShippingFee()
+        {
+            decimal basicFee = base.CalculateShippingFee();
+
+            return basicFee * 1.5m + 20000m;
+        }
+    }
+    public class EcoDelivery : DeliveryService
+    {
+        public EcoDelivery(string orderId, double distanceKm) : base(orderId, distanceKm)
+        {
+        }
+        public override decimal CalculateShippingFee()
+        {
+            decimal basicFee = base.CalculateShippingFee();
+
+            if (DistanceKm > 10)
+            {
+                return basicFee * 0.9m;
+            }
+            return basicFee;
+        }
+    }
+}
